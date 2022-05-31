@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/home"
+        android:icon="@drawable/home_icon"
+        android:title="Home"/>
+
+    <item android:id="@+id/tasks"
+        android:icon="@drawable/tasks_icon"
+        android:title="Tasks"/>
+
+    <item android:id="@+id/focus"
+        android:icon="@drawable/focus_icon"
+        android:title="Focus"/>
+
+    <item android:id="@+id/friends"
+        android:icon="@drawable/friends_icon"
+        android:title="Friends"/>
+
+</menu>
