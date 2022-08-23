@@ -8,10 +8,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.Parcelable;
+import java.io.Serializable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +27,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,8 +49,7 @@ public class HomeFragment extends Fragment {
     private TextView todayTotFocHourText;
     private TextView todayTotFocMinText;
 
-    public Button userProfileButton;
-    public Button addFocusButton;
+    public ImageButton userProfileButton;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -89,30 +91,40 @@ public class HomeFragment extends Fragment {
         numIncomTasksText = v.findViewById(R.id.numIncomTasksTextView);
         todayTotFocHourText = v.findViewById(R.id.todayTotFocHourTextView);
         todayTotFocMinText = v.findViewById(R.id.todayTotFocMinTextView);
+        //deleted intent method
+        userProfileButton = v.findViewById(R.id.userProfileButton);
 
-        //get today's date and current time
-        Date currentDate = Calendar.getInstance().getTime();
+        //get current date and time
+        Date currentDate = new Date();
+
+        //display today's date
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+        String strDate = dateFormatter.format(currentDate);
+        todaysDateText.setText(strDate);
 
         //display current time of the day
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
-        String now = timeFormatter.format(currentDate);
-        String afternoon = "12:00:00";
-        String evening = "18:00:00";
+        SimpleDateFormat timeAndDateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String morning = strDate + " 00:00:00";
+        String afternoon = strDate + " 12:00:00";
+        String evening = strDate + " 18:00:00";
 
         try
         {
-            currentDate = timeFormatter.parse(now);
-            Date afternoonDate = timeFormatter.parse(afternoon);
-            Date eveningDate = timeFormatter.parse(evening);
+            Date morningDate = timeAndDateFormatter.parse(morning);
+            Date afternoonDate = timeAndDateFormatter.parse(afternoon);
+            Date eveningDate = timeAndDateFormatter.parse(evening);
 
-            if(afternoonDate.after(currentDate))
+            //if current time is between 12am and 12pm, display "morning"
+            if(currentDate.after(morningDate) && afternoonDate.after(currentDate))
             {
                 timeOfTheDayText.setText("Morning");
             }
+            //if current time is between 12pm and 6pm, display "afternoon"
             else if(currentDate.after(afternoonDate) && eveningDate.after(currentDate))
             {
                 timeOfTheDayText.setText("Afternoon");
             }
+            //if current time is between 6pm and 12am, display "evening"
             else if(currentDate.after(eveningDate))
             {
                 timeOfTheDayText.setText("Evening");
@@ -123,51 +135,46 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
 
-        //display today's date
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-        String strDate = dateFormatter.format(currentDate);
-        todaysDateText.setText(strDate);
-
         //fetch current user
-        firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(getActivity(), new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful())
+        firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(getActivity(), task -> {
+            if(task.isSuccessful())
+            {
+                for(DocumentSnapshot ds : task.getResult().getDocuments())
                 {
-                    for(DocumentSnapshot ds : task.getResult().getDocuments())
-                    {
-                        CISUser currUser = ds.toObject(CISUser.class);
-                        //display username
-                        nameText.setText(currUser.getUsername());
-                        //display the number of incomplete tasks
-                        numIncomTasksText.setText(Integer.toString(currUser.getTasks().size()));
-                        //display today's total focus time
-                        todayTotFocHourText.setText(Integer.toString(currUser.getTodayTotalFocusTime().get(0)));
-                        todayTotFocMinText.setText(Integer.toString(currUser.getTodayTotalFocusTime().get(1)));
-                    }
+                    CISUser currUser = ds.toObject(CISUser.class);
+                    //display username
+                    nameText.setText(currUser.getUsername());
+                    //display the number of incomplete tasks
+                    numIncomTasksText.setText(Integer.toString(currUser.getTasks().size()));
+                    //display today's total focus time
+                    todayTotFocHourText.setText(Integer.toString(currUser.getTodayTotalFocusTime().get(0)));
+                    todayTotFocMinText.setText(Integer.toString(currUser.getTodayTotalFocusTime().get(1)));
+
+                    userProfileButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v1) {
+                            Intent goToUserProfileActivity = new Intent(v1.getContext(), UserProfileActivity.class);
+                            goToUserProfileActivity.putExtra("user", (Serializable) currUser);
+                            startActivity(goToUserProfileActivity);
+                        }
+                    });
                 }
-                else
-                {
-                    Toast.makeText(getActivity(), "Cannot fetch users!", Toast.LENGTH_SHORT).show();
-                }
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "Cannot fetch users!", Toast.LENGTH_SHORT).show();
             }
         });
 
         return v;
     }
 
-
-    public void goToUserProfileActivity(View v)
-    {
-        startActivity(new Intent(getActivity(), UserProfileActivity.class));
-    }
-
-    public void goToFocusActivity(View v)
-    {
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.home, new FocusFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+//    public void goToFocusActivity()
+//    {
+//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.home, new FocusFragment());
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
+//    }
 }

@@ -164,27 +164,24 @@ public class AuthActivity extends AppCompatActivity {
                 if(task.getResult().getDocuments().size() == 0)
                 {
                     //signs user in
-                    mAuth.signInWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful())
-                            {
-                                Log.d("SIGN IN", "signInWithEmail:success");
+                    mAuth.signInWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful())
+                        {
+                            Log.d("SIGN IN", "signInWithEmail:success");
 
-                                CISUser newUser = new CISUser(emailString, usernameString);
-                                firestore.collection("users").add(newUser);
+                            CISUser newUser = new CISUser(emailString, usernameString);
+                            firestore.collection("users").add(newUser);
 
-                                //if current user is not null, bring to HomeActivity
-                                if(updateUI(mAuth.getCurrentUser()))
-                                {
-                                    startActivity(new Intent(getBaseContext(), HomeActivity.class));
-                                }
-                            }
-                            else
+                            //if current user is not null, bring to HomeActivity
+                            if(updateUI(mAuth.getCurrentUser()))
                             {
-                                Log.w("SIGN IN", "signInWithEmail:failure", task.getException());
-                                Toast.makeText(getBaseContext(), "Cannot sign in!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(getBaseContext(), HomeActivity.class));
                             }
+                        }
+                        else
+                        {
+                            Log.w("SIGN IN", "signInWithEmail:failure", task1.getException());
+                            Toast.makeText(getBaseContext(), "Cannot sign in!", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

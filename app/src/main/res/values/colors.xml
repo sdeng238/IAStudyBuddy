@@ -14,4 +14,11 @@
     <color name="green_5">#4E9C81</color>
     <color name="green_6">#358873</color>
     <color name="darkest_green">#207567</color>
+    <color name="red">#E3A7C0</color>
+    <color name="orange">#F0D5BA</color>
+    <color name="yellow">#F2E9CC</color>
+    <color name="green">#C2D5A8</color>
+    <color name="blue">#BAD5F0</color>
+    <color name="purple">#B0ABCB</color>
+    <color name="pink">#F8D7E8</color>
 </resources>

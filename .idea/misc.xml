@@ -20,11 +20,14 @@
         <entry key="app/src/main/res/drawable/nav_item_colour_selected.xml" value="0.24322916666666666" />
         <entry key="app/src/main/res/drawable/round_button.xml" value="0.2984375" />
         <entry key="app/src/main/res/drawable/tasks_icon.xml" value="0.24322916666666666" />
+        <entry key="app/src/main/res/layout/activity_add_subject.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/activity_add_task.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_auth.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.3522302598016249" />
         <entry key="app/src/main/res/layout/activity_launch.xml" value="0.213768115942029" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22690726942941858" />
-        <entry key="app/src/main/res/layout/fragment_focus.xml" value="0.19429347826086957" />
+        <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/fragment_focus.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_friends.xml" value="0.19429347826086957" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.19429347826086957" />

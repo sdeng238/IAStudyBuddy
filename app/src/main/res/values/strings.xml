@@ -2,4 +2,15 @@
     <string name="app_name">IAStudyBuddy</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="focus">focus</string>
+    <string-array name="colours">
+        <item>Select colour</item>
+        <item>red</item>
+        <item>orange</item>
+        <item>yellow</item>
+        <item>green</item>
+        <item>blue</item>
+        <item>purple</item>
+        <item>pink</item>
+    </string-array>
 </resources>
