@@ -30,8 +30,9 @@
         <entry key="app/src/main/res/layout/fragment_focus.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_friends.xml" value="0.19429347826086957" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.19429347826086957" />
+        <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.375" />
         <entry key="app/src/main/res/layout/plus_button.xml" value="0.223731884057971" />
+        <entry key="app/src/main/res/layout/tasks_row_view.xml" value="0.375" />
         <entry key="app/src/main/res/layout/trial.xml" value="0.19429347826086957" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.22708333333333333" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.16510416666666666" />

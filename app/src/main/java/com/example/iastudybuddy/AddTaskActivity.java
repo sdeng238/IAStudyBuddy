@@ -90,7 +90,7 @@ public class AddTaskActivity extends AppCompatActivity implements AdapterView.On
                                for(DocumentSnapshot ds1 : task1.getResult().getDocuments())
                                {
                                    //create new task with current subject UID
-                                   CISTask newTask = new CISTask(taskNameString, currSubject.getUid());
+                                   CISTask newTask = new CISTask(taskNameString, currSubject.getUid(), mAuth.getCurrentUser().getEmail());
 
                                    //add new Task object to tasks collection, setting doc name as task UID
                                    firestore.collection("tasks").document(newTask.getUid()).set(newTask);

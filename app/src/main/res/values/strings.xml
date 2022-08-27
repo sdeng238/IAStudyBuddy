@@ -13,4 +13,8 @@
         <item>purple</item>
         <item>pink</item>
     </string-array>
+    <string-array name="sorts">
+        <item>by date</item>
+        <item>by subject</item>
+    </string-array>
 </resources>
