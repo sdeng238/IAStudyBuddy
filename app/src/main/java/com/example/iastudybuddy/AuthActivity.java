@@ -35,17 +35,17 @@ public class AuthActivity extends AppCompatActivity {
     private Button continueButton;
 
     //if user is already signed in, bring user to HomeActivity
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-
-        if(updateUI(mAuth.getCurrentUser()))
-        {
-            startActivity(new Intent(this, HomeActivity.class));
-        }
-
-    }
+//    @Override
+//    public void onStart()
+//    {
+//        super.onStart();
+//
+//        if(updateUI(mAuth.getCurrentUser()))
+//        {
+//            startActivity(new Intent(this, HomeActivity.class));
+//        }
+//
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

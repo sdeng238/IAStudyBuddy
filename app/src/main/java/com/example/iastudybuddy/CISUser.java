@@ -8,10 +8,10 @@ import java.util.UUID;
 public class CISUser implements Serializable {
     private int crownsNumber;
     private String email;
-    private ArrayList<String> friendsUsernames;
+    private ArrayList<String> friendsUID;
     private int personalBestMinutes;
     private String rank;
-    private ArrayList<String> requestUsernames;
+    private ArrayList<String> requestsUID;
     private ArrayList<String> subjects;
     private ArrayList<String> tasks;
     private int todayTasksCompleted;
@@ -27,10 +27,10 @@ public class CISUser implements Serializable {
     public CISUser(String email, String username) {
         crownsNumber = 0;
         this.email = email;
-        friendsUsernames = new ArrayList<>();
+        friendsUID = new ArrayList<>();
         personalBestMinutes = 0;
         rank = "bronze";
-        requestUsernames = new ArrayList<>();
+        requestsUID = new ArrayList<>();
         subjects = new ArrayList<>();
         tasks = new ArrayList<>();
         todayTasksCompleted = 0;
@@ -59,14 +59,6 @@ public class CISUser implements Serializable {
         this.email = email;
     }
 
-    public ArrayList<String> getFriendsUsernames() {
-        return friendsUsernames;
-    }
-
-    public void setFriendsUsernames(ArrayList<String> friendsUsernames) {
-        this.friendsUsernames = friendsUsernames;
-    }
-
     public int getPersonalBestMinutes() {
         return personalBestMinutes;
     }
@@ -83,13 +75,6 @@ public class CISUser implements Serializable {
         this.rank = rank;
     }
 
-    public ArrayList<String> getRequestUsernames() {
-        return requestUsernames;
-    }
-
-    public void setRequestUsernames(ArrayList<String> requestUsernames) {
-        this.requestUsernames = requestUsernames;
-    }
 
     public ArrayList<String> getSubjects() {
         return subjects;
@@ -145,5 +130,21 @@ public class CISUser implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public ArrayList<String> getFriendsUID() {
+        return friendsUID;
+    }
+
+    public void setFriendsUID(ArrayList<String> friendsUID) {
+        this.friendsUID = friendsUID;
+    }
+
+    public ArrayList<String> getRequestsUID() {
+        return requestsUID;
+    }
+
+    public void setRequestsUID(ArrayList<String> requestsUID) {
+        this.requestsUID = requestsUID;
     }
 }

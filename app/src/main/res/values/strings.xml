@@ -17,4 +17,8 @@
         <item>by date</item>
         <item>by subject</item>
     </string-array>
+    <string-array name="methods">
+        <item>by email</item>
+        <item>by username</item>
+    </string-array>
 </resources>
