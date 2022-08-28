@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +37,10 @@ public class FriendsFragment extends Fragment {
 
     private RecyclerView requestsRecView;
     private ArrayList<CISUser> requestsList;
+
+    private RecyclerView friendsRecView;
+    private ArrayList<CISUser> friendsList;
+    private ArrayList<CISUser> sortedFriendsList;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,28 +100,32 @@ public class FriendsFragment extends Fragment {
 
         //ArrayList of user's request CISUser objects
         requestsList = new ArrayList<>();
+        //ArrayList of user's friend CISUser objects (not sorted)
+        friendsList = new ArrayList<>();
+        //ArrayList of user's friend CISUser objects (sorted by today's total focus time)
+        sortedFriendsList = new ArrayList<>();
         //fetch current user
         firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task ->
         {
-            if(task.isSuccessful())
+            if (task.isSuccessful())
             {
-                for(DocumentSnapshot ds : task.getResult().getDocuments())
+                for (DocumentSnapshot ds : task.getResult().getDocuments())
                 {
                     CISUser currUser = ds.toObject(CISUser.class);
 
                     //loop through current user's requestsUID ArrayList
-                    for(String currRequestUID : currUser.getRequestsUID())
+                    for (String currRequestUID : currUser.getRequestsUID())
                     {
                         //fetch CISUser object of current uid in current user's requestsUID ArrayList
                         firestore.collection("users").whereEqualTo("uid", currRequestUID).get().addOnCompleteListener(task1 ->
                         {
-                            if(task1.isSuccessful())
+                            if (task1.isSuccessful())
                             {
-                                for(DocumentSnapshot ds1 : task1.getResult().getDocuments())
+                                for (DocumentSnapshot ds1 : task1.getResult().getDocuments())
                                 {
                                     CISUser currUser1 = ds1.toObject(CISUser.class);
 
-                                    //add CISUser object of uid in current user's requestsUID ArrayList
+                                    //add CISUser object of request user's uid to requestsList ArrayList
                                     requestsList.add(currUser1);
                                 }
 
@@ -127,6 +136,74 @@ public class FriendsFragment extends Fragment {
                             }
                         });
                     }
+
+                    //fetch users whose friendsUID ArrayList contains current user's UID
+                    firestore.collection("users").whereArrayContains("friendsUID", currUser.getUid()).get().addOnCompleteListener(task1 ->
+                    {
+                        if (task1.isSuccessful())
+                        {
+                            for (DocumentSnapshot ds1 : task1.getResult().getDocuments())
+                            {
+                                CISUser currUser1 = ds1.toObject(CISUser.class);
+
+                                //add CISUser object of friend user's uid to friendsList ArrayList
+                                friendsList.add(currUser1);
+                            }
+
+                            //add current user to friendsList ArrayList
+                            friendsList.add(currUser);
+
+                            boolean added = false;
+                            int friendsListMinutes = 0;
+                            int sortedFriendsListMinutes = 0;
+                            //loop through each element in tasksList
+                            for (int num = 0; num < friendsList.size(); num++)
+                            {
+                                //if nothing has been added to sortedTasksList, add first element of tasksList to sortedTasksList
+                                if (sortedFriendsList.size() == 0)
+                                {
+                                    sortedFriendsList.add(friendsList.get(num));
+                                }
+                                //if something has already been added to sortedTasksList
+                                else
+                                {
+                                    //set added to false
+                                    added = false;
+                                    //convert today total focus time to minutes
+                                    friendsListMinutes = friendsList.get(num).getTodayTotalFocusTime().get(0) * 60 + friendsList.get(num).getTodayTotalFocusTime().get(1) + friendsList.get(num).getTodayTotalFocusTime().get(2) / 60;
+                                    //loop through each element in sortedTasksList
+                                    for (int numTwo = 0; numTwo < sortedFriendsList.size(); numTwo++)
+                                    {
+                                        //if added is false
+                                        if (!added)
+                                        {
+                                            //convert today total focus time to minutes
+                                            sortedFriendsListMinutes = sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(0) * 60 + sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(1) + sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(2) / 60;
+                                            //if today's  of Task in taskList is before that of current Task in sortedTaskList
+                                            if (friendsListMinutes > sortedFriendsListMinutes)
+                                            {
+                                                //insert Task in taskList before current Task in sortedTaskList
+                                                sortedFriendsList.add(numTwo, friendsList.get(num));
+                                                //set added to true
+                                                added = true;
+                                            }
+                                        }
+                                    }
+                                    //if Task in taskList has not been added to sortedTaskList
+                                    if (!added)
+                                    {
+                                        //add Task in taskList to the end of sortedTaskList
+                                        sortedFriendsList.add(friendsList.get(num));
+                                    }
+                                }
+                            }
+
+                            friendsRecView = v.findViewById(R.id.friendsRecView);
+                            FriendsFragment.FriendsAdapter myAdapter2 = new FriendsFragment.FriendsAdapter(sortedFriendsList);
+                            friendsRecView.setAdapter(myAdapter2);
+                            friendsRecView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+                        }
+                    });
                 }
             }
         });
@@ -294,6 +371,57 @@ public class FriendsFragment extends Fragment {
             requestUsernameText = itemView.findViewById(R.id.requestUsernameTextView);
             acceptButton = itemView.findViewById(R.id.acceptButton);
             declineButton = itemView.findViewById(R.id.declineButton);
+        }
+    }
+
+    public static class FriendsAdapter extends RecyclerView.Adapter<FriendsFragment.FriendsViewHolder>
+    {
+        ArrayList<CISUser> friendsData;
+
+        public FriendsAdapter(ArrayList<CISUser> data)
+        {
+            friendsData = data;
+        }
+
+        @NonNull
+        @Override
+        public FriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        {
+            View myView = LayoutInflater.from(parent.getContext()).inflate(R.layout.friends_row_view, parent, false);
+
+            FriendsFragment.FriendsViewHolder holder = new FriendsFragment.FriendsViewHolder(myView);
+
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull FriendsViewHolder holder, int position)
+        {
+            //❗❕‼️❕‼️IF POSITION IS 1, DISPLAY CROWN❗❕‼️❕‼️
+            holder.friendUsernameText.setText(friendsData.get(position).getUsername());
+            holder.friendTodayTotFocusTimeText.setText(friendsData.get(position).getTodayTotalFocusTime().get(0) + "h" + friendsData.get(position).getTodayTotalFocusTime().get(1) + "min");
+            holder.friendTodayTasksComText.setText(friendsData.get(position).getTodayTasksCompleted() + " tasks");
+        }
+
+        @Override
+        public int getItemCount()
+        {
+            return friendsData.size();
+        }
+    }
+
+    public static class FriendsViewHolder extends RecyclerView.ViewHolder
+    {
+        protected TextView friendUsernameText;
+        protected TextView friendTodayTotFocusTimeText;
+        protected TextView friendTodayTasksComText;
+
+        public FriendsViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            friendUsernameText = itemView.findViewById(R.id.frFriendUsernameTextView);
+            friendTodayTotFocusTimeText = itemView.findViewById(R.id.friendTodayTotFocusTimeTextView);
+            friendTodayTasksComText = itemView.findViewById(R.id.friendTodayTasksComTextView);
         }
     }
 }

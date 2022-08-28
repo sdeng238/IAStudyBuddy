@@ -33,6 +33,7 @@
         <entry key="app/src/main/res/layout/fragment_friends.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/friends_row_view.xml" value="0.335" />
         <entry key="app/src/main/res/layout/plus_button.xml" value="0.223731884057971" />
         <entry key="app/src/main/res/layout/requests_row_view.xml" value="0.335" />
         <entry key="app/src/main/res/layout/subjects_row_view.xml" value="0.25" />

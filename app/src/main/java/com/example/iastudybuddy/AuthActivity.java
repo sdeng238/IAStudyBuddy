@@ -170,7 +170,7 @@ public class AuthActivity extends AppCompatActivity {
                             Log.d("SIGN IN", "signInWithEmail:success");
 
                             CISUser newUser = new CISUser(emailString, usernameString);
-                            firestore.collection("users").add(newUser);
+                            firestore.collection("users").document(newUser.getUid()).set(newUser);
 
                             //if current user is not null, bring to HomeActivity
                             if(updateUI(mAuth.getCurrentUser()))
