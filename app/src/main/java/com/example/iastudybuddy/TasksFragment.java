@@ -1,11 +1,14 @@
 package com.example.iastudybuddy;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,21 +18,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.color.ColorRoles;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,6 +49,7 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
 
+    private TextView numComTasksText;
     private Button goToAddTaskActivityButton;
 
     private RecyclerView tasksRecView;
@@ -50,8 +57,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
     private ArrayList<CISTask> sortedTasksList;
     private int[] subjectColours; //NEW
     private ArrayList<String> subjectUID; //NEW
-    private ArrayList<Integer> tasksSortingIndex; //NEW
     private ArrayList<Integer> sortingIndex;
+    private CISTask deletedTask;
 
     private String selectedSort;
     private Spinner sSort;
@@ -127,17 +134,15 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
             }
         });
 
-        //ArrayList of index of Task objects according to ascending creation date
-        tasksSortingIndex = new ArrayList<>();
-
         //ArrayList of user's Task objects NOT sorted by date
         tasksList = new ArrayList<>();
 
         //ArrayList of sorting index for selected sort (by date)
         sortingIndex = new ArrayList<>();
-
         //ArrayList of user's Task objects SORTED BY DATE
         sortedTasksList = new ArrayList<>();
+        numComTasksText = v.findViewById(R.id.numComTasksTextView);
+        deletedTask = null;
         //fetch user's Task objects
         firestore.collection("tasks").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task ->
         {
@@ -154,46 +159,132 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                 {
                     if(task1.isSuccessful())
                     {
-                        for(DocumentSnapshot ds : task1.getResult().getDocuments())
+                        for(DocumentSnapshot ds1 : task1.getResult().getDocuments())
                         {
-                            CISUser currUser = ds.toObject(CISUser.class);
+                            CISUser currUser = ds1.toObject(CISUser.class);
 
-                            //loop through user's tasks ArrayList (SORTED by add date)
-                            for(String currTaskUID : currUser.getTasks())
+                            numComTasksText.setText(String.valueOf(currUser.getTodayTasksCompleted()));
+
+                            boolean added = false;
+                            //loop through each element in tasksList
+                            for(int num = 0; num < tasksList.size(); num++)
                             {
-                                //loop through tasksList ArrayList (UNSORTED)
-                                for(int num = 0; num < tasksList.size(); num++)
+                                //if nothing has been added to sortedTasksList, add first element of tasksList to sortedTasksList
+                                if(sortedTasksList.size() == 0)
                                 {
-                                    //if current Task object's UID in UNSORTED ArrayList matches current Task object's UID in SORTED ArrayList
-                                    if(tasksList.get(num).getUid().equals(currTaskUID))
+                                    sortedTasksList.add(tasksList.get(num));
+                                }
+                                //if something has already been added to sortedTasksList
+                                else
+                                {
+                                    //set added to false
+                                    added = false;
+                                    //loop through each element in sortedTasksList
+                                    for(int numTwo = 0; numTwo < sortedTasksList.size(); numTwo++)
                                     {
-                                        //add current Task object's index in UNSORTED ArrayList to tasksSortingIndex
-                                        tasksSortingIndex.add(num);
+                                        //if added is false
+                                        if(!added)
+                                        {
+                                            //if creation date of Task in taskList is before that of current Task in sortedTaskList
+                                            if(new Date(tasksList.get(num).getCreationDay().getTime()).before(new Date(sortedTasksList.get(numTwo).getCreationDay().getTime())))
+                                            {
+                                                //insert Task in taskList before current Task in sortedTaskList
+                                                sortedTasksList.add(numTwo, tasksList.get(num));
+                                                //set added to true
+                                                added = true;
+                                            }
+                                        }
+                                    }
+                                    //if Task in taskList has not been added to sortedTaskList
+                                    if(!added)
+                                    {
+                                        //add Task in taskList to the end of sortedTaskList
+                                        sortedTasksList.add(tasksList.get(num));
                                     }
                                 }
                             }
+
+                            //add numbers in natural order to sortingIndex ArrayList to make "by date" show up as sortedTasksList
+                            for(int num = 0; num < sortedTasksList.size(); num++)
+                            {
+                                sortingIndex.add(num);
+                            }
+
+                            //create and add adapter for recView
+                            TasksAdapter myAdapter = new TasksAdapter(sortedTasksList, subjectColours, sortingIndex);
+                            tasksRecView.setAdapter(myAdapter);
+                            tasksRecView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+
+                            ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
+                            {
+                                //not used -> only applied for drag and rearrange items
+                                @Override
+                                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target)
+                                {
+                                    return false;
+                                }
+
+                                //swipe features
+                                @Override
+                                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
+                                {
+                                    int position = viewHolder.getAdapterPosition();
+                                    DocumentReference currUserRef = firestore.collection("users").document(ds1.getId());
+
+                                    switch (direction)
+                                    {
+                                        //handle the case in which user swipes from right to left <--
+                                        case ItemTouchHelper.LEFT:
+                                            deletedTask = sortedTasksList.get(position);
+                                            sortedTasksList.remove(position);
+                                            myAdapter.notifyItemRemoved(position);
+
+                                            //remove completed Task object UID from tasks ArrayList in Firebase user
+                                            currUserRef.update("tasks", FieldValue.arrayRemove(deletedTask.getUid()));
+                                            //delete Task object document from tasks collection in Firebase
+                                            firestore.collection("tasks").document(deletedTask.getUid()).delete();
+
+                                            //increase todayTasksCompleted by 1 in Firebase user
+                                            currUserRef.update("todayTasksCompleted", currUser.getTodayTasksCompleted() + 1);
+                                            //increase numComTasksTextView by 1 on display
+                                            numComTasksText.setText(String.valueOf(currUser.getTodayTasksCompleted() + 1));
+
+                                            Snackbar.make(tasksRecView, deletedTask.getName() + " has been completed!", Snackbar.LENGTH_INDEFINITE)
+                                                    .setAction("Undo", view ->
+                                                    {
+                                                        sortedTasksList.add(position, deletedTask);
+                                                        myAdapter.notifyItemInserted(position);
+
+                                                        currUserRef.update("tasks", FieldValue.arrayUnion(deletedTask.getUid()));
+                                                        firestore.collection("tasks").document(deletedTask.getUid()).set(deletedTask);
+
+                                                        currUserRef.update("todayTasksCompleted", currUser.getTodayTasksCompleted());
+                                                        numComTasksText.setText(String.valueOf(currUser.getTodayTasksCompleted()));
+                                                    }).show();
+                                            break;
+                                    }
+                                }
+
+                                @Override
+                                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                                    new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                                            .addSwipeLeftBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.green_2))
+                                            .addSwipeLeftActionIcon(R.drawable.ic_baseline_done_outline_24)
+                                            .create()
+                                            .decorate();
+
+                                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                                }
+                            };
+
+                            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+                            itemTouchHelper.attachToRecyclerView(tasksRecView);
                         }
 
-                        //set Task objects sorted with ascending date as default order in Task ArrayList
-                        //add user's Task object to SORTED sortedTasksList ArrayList using SORTED index ArrayList
-                        for(Integer currIndex : tasksSortingIndex)
-                        {
-                            sortedTasksList.add(tasksList.get(currIndex));
-                        }
-
-                        //add numbers in natural order to sortingIndex ArrayList to make "by date" show up as sortedTasksList
-                        for(int num = 0; num < sortedTasksList.size(); num++)
-                        {
-                            sortingIndex.add(num);
-                        }
-
-                        //create and add adapter for recView
-                        TasksAdapter myAdapter = new TasksAdapter(sortedTasksList, subjectColours, sortingIndex);
-                        tasksRecView.setAdapter(myAdapter);
-                        tasksRecView.setLayoutManager(new LinearLayoutManager(v.getContext()));
                     }
                 });
             }
+
         });
 
         sSort = v.findViewById(R.id.tSortSpinner);

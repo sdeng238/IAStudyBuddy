@@ -47,4 +47,7 @@ dependencies {
 
     //dependency for bottom navigation bar
     implementation 'com.google.android.material:material:1.0.0'
+
+    //dependency for recycler view swipe decorator
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 }
