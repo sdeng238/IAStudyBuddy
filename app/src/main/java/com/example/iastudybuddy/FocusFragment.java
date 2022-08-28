@@ -5,10 +5,12 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +22,15 @@ public class FocusFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private Button goToAddSubjectActivityButton;
+
+    private Chronometer chronometer;
+    //time difference from when user starts chronometer from when they paused it
+    private long pauseOffset;
+    private boolean running;
+
+    private Button chrStartButton;
+    private Button chrPauseButton;
+    private Button chrResetButton;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -65,13 +76,51 @@ public class FocusFragment extends Fragment {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_focus, container, false);
 
-        goToAddSubjectActivityButton = v.findViewById(R.id.goToAddSubjectButton);
-        goToAddSubjectActivityButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getActivity(), AddSubjectActivity.class));
+        //hour and colon are automatically added when one hour is reached
+        chronometer = v.findViewById(R.id.chronometer);
+        //set as Time: (chronometer) when activity starts
+//        chronometer.setFormat("Time: %s");
+//        chronometer.setBase(SystemClock.elapsedRealtime());
+
+        chrStartButton = v.findViewById(R.id.chrStartButton);
+        chrStartButton.setOnClickListener(view ->
+        {
+            //if not running, be able to start chronometer
+            if(!running)
+            {
+                //sets base pause offset (eg. 5 seconds) into the past -> chronometer starts earlier than the current time
+                chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
+                //start running chronometer at the time user clicks "pause"
+                chronometer.start();
+                running = true;
             }
         });
+
+        chrPauseButton = v.findViewById(R.id.chrPauseButton);
+        chrPauseButton.setOnClickListener(view ->
+        {
+            if(running)
+            {
+                chronometer.stop();
+                //current elapsed real time - elapsed real time when user clicked start
+                //getBase() returns base time when user started chronometer
+                //time that has passed since user started chronometer IN MILLISECONDS
+                pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+                running = false;
+            }
+        });
+
+        chrResetButton = v.findViewById(R.id.chrResetButton);
+        chrResetButton.setOnClickListener(view ->
+        {
+            //reset back to 0
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            //don't want any time to be added to chronometer when user clicks start
+            pauseOffset = 0;
+        });
+
+        goToAddSubjectActivityButton = v.findViewById(R.id.goToAddSubjectButton);
+        goToAddSubjectActivityButton.setOnClickListener(view -> startActivity(new Intent(getActivity(), AddSubjectActivity.class)));
 
         return v;
     }
