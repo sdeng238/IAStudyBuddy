@@ -61,18 +61,14 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
             //if email field is not empty
             if(!friendEmailField.getText().toString().isEmpty())
             {
-                System.out.println("not empty");
                 //fetch user with inputted email
                 firestore.collection("users").whereEqualTo("email", friendEmailField.getText().toString()).get().addOnCompleteListener(task ->
                 {
-                    System.out.println("firestore searched");
                     //if there is exactly one user with inputted email
                     if(task.getResult().getDocuments().size() == 1)
                     {
-                        System.out.println("one user with inputted email");
                         for(DocumentSnapshot ds : task.getResult().getDocuments())
                         {
-                            System.out.println("call addNewFriend()");
                             //call addNewFriend() method, passing in requested user's document ID
                             addNewFriend(v, ds.getId());
                         }
