@@ -25,9 +25,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link FriendsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class displays the user's list of friends and friend requests. The friends list is displayed
+ * according to how long each user has spent focusing for the day, with the user with the longest focusing
+ * time displayed at the top of the list. The list of friend requests include an "accept" and "decline"
+ * button next to each requesting user.
+ *
+ * @author Shirley Deng
+ * @version 0.1
  */
 public class FriendsFragment extends Fragment {
 
@@ -49,15 +53,6 @@ public class FriendsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FriendsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FriendsFragment newInstance(String param1, String param2) {
         FriendsFragment fragment = new FriendsFragment();
         return fragment;
@@ -197,6 +192,14 @@ public class FriendsFragment extends Fragment {
         return v;
     }
 
+    /**
+     * This class is an Adapter for the RecyclerView displaying the user's list of friend requests.
+     * The Adapter receives information such as the user's list of friend requests from FriendsFragment
+     * in order to populate the RecyclerView.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class RequestsAdapter extends RecyclerView.Adapter<FriendsFragment.RequestsViewHolder>
     {
         FirebaseFirestore firestore;
@@ -344,6 +347,14 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+    /**
+     * This class is a ViewHolder for the RecyclerView displaying the user's list of friend requests. The
+     * ViewHolder shows what will be displayed in each row of the RecyclerView, which in this case is
+     * the requesting user's username and the "accept" and "decline" buttons.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class RequestsViewHolder extends RecyclerView.ViewHolder
     {
         protected TextView requestUsernameText;
@@ -360,6 +371,14 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+    /**
+     * This class is an Adapter for the RecyclerView displaying the user's list of friends. The Adapter
+     * receives information such as the user's list of friends from FriendsFragment in order to populate
+     * the RecyclerView.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class FriendsAdapter extends RecyclerView.Adapter<FriendsFragment.FriendsViewHolder>
     {
         ArrayList<CISUser> friendsData;
@@ -406,6 +425,15 @@ public class FriendsFragment extends Fragment {
         }
     }
 
+    /**
+     * This class is a ViewHolder for the RecyclerView displaying the user's list of friends. The
+     * ViewHolder shows what will be displayed in each row of the RecyclerView, which in this case is
+     * the friend's username, total focusing time of the day and total number of completed tasks for
+     * the day.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class FriendsViewHolder extends RecyclerView.ViewHolder
     {
         protected TextView friendUsernameText;

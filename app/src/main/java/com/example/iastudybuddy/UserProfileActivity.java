@@ -11,6 +11,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.auth.User;
 
+/**
+ * This class displays the user's personal information and statistics. It also has a sign out button
+ * so users can sign out of their account and navigate back to authentication.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class UserProfileActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;

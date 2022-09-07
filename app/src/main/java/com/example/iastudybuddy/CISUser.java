@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * This class specifies the instance variables of the CISUser class, and also includes getters and setters
+ * for the instance variables to access and modify them.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 //changed name of class from User to com.example.iastudybuddy.CISUser
 public class CISUser implements Serializable {
     private String email;

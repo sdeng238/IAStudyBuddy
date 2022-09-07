@@ -4,14 +4,20 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
-//CHANGE NAME FROM TASK TO CISTASK
+/**
+ * This class specifies the instance variables of the CISTask class, and also includes getters and setters
+ * for the instance variables to access and modify them.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class CISTask {
     private boolean complete;
     private Date creationDay;
     private String name;
     private String subject;
     private String uid;
-    private String ownerEmail; //ADD TASK'S OWNER EMAIL
+    private String ownerEmail;
 
     public CISTask() {
     }

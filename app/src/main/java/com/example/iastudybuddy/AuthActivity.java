@@ -22,6 +22,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 
+/**
+ * This class allows users to authenticate, specifically to sign up using their email address, creating
+ * a password and entering a unique username, and to sign in using their email address and the correct
+ * corresponding password. Some error handling tools are also in place, such as checking whether the fields
+ * are empty and whether the email the user is signing up does not already exist in the system.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class AuthActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;

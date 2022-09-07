@@ -38,14 +38,13 @@ import java.util.Date;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TasksFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This class displays the user's list of tasks and allows the user to choose how they want to arrange it–
+ * by date of creation or by the subject they are under.
+ *
+ * @author Shirley Deng
+ * @version 0.1
  */
 public class TasksFragment extends Fragment implements AdapterView.OnItemSelectedListener {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
 
@@ -69,15 +68,6 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TasksFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static TasksFragment newInstance(String param1, String param2) {
         TasksFragment fragment = new TasksFragment();
         return fragment;
@@ -343,6 +333,14 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
 
     }
 
+    /**
+     * This class is an Adapter for the RecyclerView displaying the user's list of tasks. The Adapter
+     * receives information such as the user's list of tasks from TasksFragment in order to populate
+     * the RecyclerView.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class TasksAdapter extends RecyclerView.Adapter<TasksViewHolder>
     {
         FirebaseFirestore firestore;
@@ -468,6 +466,14 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
         }
     }
 
+    /**
+     * This class is a ViewHolder for the RecyclerView displaying the user's list of tasks. The
+     * ViewHolder shows what will be displayed in each row of the RecyclerView, which in this case is
+     * the task's name, number of days between today and the creation date and the task's subject's colour.
+     *
+     * @author Shirley Deng
+     * @version 0.1
+     */
     public static class TasksViewHolder extends RecyclerView.ViewHolder
     {
         protected TextView taskNameText;

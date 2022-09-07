@@ -20,6 +20,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class allows users to create a new subject if the inputs received are valid (the fields are
+ * not empty, a colour is selected and the subject name does not already exist within the system).
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
+
 public class AddSubjectActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private FirebaseAuth mAuth;
@@ -48,6 +56,13 @@ public class AddSubjectActivity extends AppCompatActivity implements AdapterView
         sColour.setOnItemSelectedListener(this);
     }
 
+    /**
+     * This method checks whether the fields are not empty or whether a subject with the inputted name
+     * does not exist within the system. If both criteria are fulfilled, the method
+     * creates a Subject object with the inputted parameters and saves it in Firebase.
+     *
+     * @param v the View of the current activity being displayed
+     */
     public void addNewSubject(View v)
     {
         String subjectNameString = subjectNameField.getText().toString();
@@ -97,6 +112,11 @@ public class AddSubjectActivity extends AppCompatActivity implements AdapterView
         }
     }
 
+    /**
+     * This method creates an intent to go to HomeActivity.
+     *
+     * @param v the View of the activity being displayed
+     */
     public void asBack(View v)
     {
         startActivity(new Intent(this, HomeActivity.class));

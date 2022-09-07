@@ -22,6 +22,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * This class allows users to create a new task if the input is valid (the fields are not empty and
+ * a subject is selected).
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class AddTaskActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     private FirebaseAuth mAuth;

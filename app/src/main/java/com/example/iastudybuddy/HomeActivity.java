@@ -24,6 +24,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * This class is mainly responsible for attaching all the fragments. It is important for navigating
+ * between different fragments using the bottom navigation bar.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class HomeActivity extends AppCompatActivity {
 
     //https://youtu.be/Bb8SgfI4Cm4

@@ -17,6 +17,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
+/**
+ * This class allows users to add friend through inputting their username or email address, then
+ * sends a friend request to the user if the input is valid.
+ *
+ * @author Shirley Deng
+ * @version 0.1
+ */
 public class AddFriendActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     private FirebaseAuth mAuth;
@@ -54,6 +62,14 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
         friendEmailField.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * This method checks whether the fields are not empty or whether a user with the inputted email
+     * address or username exists within the system. If both criteria are fulfilled, the method
+     * calls another method addNewFriend() to send the friend request to the user with the inputted
+     * email or username.
+     *
+     * @param v the View of the current activity being displayed
+     */
     public void checkValid(View v)
     {
         //if selected "by email"
@@ -120,6 +136,13 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
         }
     }
 
+    /**
+     * This method sends a friend request to the requested user by updating that user's requestsUID
+     * ArrayList in Firebase so they will see the request when the data gets displayed on their end.
+     *
+     * @param v the view of the current activity being displayed
+     * @param userDocID a String that is the document ID of the requested User object in Firebase
+     */
     public void addNewFriend(View v, String userDocID)
     {
         //fetch current user
@@ -145,6 +168,11 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
         });
     }
 
+    /**
+     * This method creates an intent to go to HomeActivity.
+     *
+     * @param v the View of the activity being displayed
+     */
     public void afBack(View v)
     {
         startActivity(new Intent(this, HomeActivity.class));
