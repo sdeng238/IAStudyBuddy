@@ -29,11 +29,11 @@
         <entry key="app/src/main/res/layout/activity_launch.xml" value="0.213768115942029" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22690726942941858" />
         <entry key="app/src/main/res/layout/activity_user_profile.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/fragment_focus.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_focus.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_friends.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_tasks.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/friends_row_view.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/friends_row_view.xml" value="0.42870527017580695" />
         <entry key="app/src/main/res/layout/plus_button.xml" value="0.223731884057971" />
         <entry key="app/src/main/res/layout/requests_row_view.xml" value="0.335" />
         <entry key="app/src/main/res/layout/subjects_row_view.xml" value="0.25" />

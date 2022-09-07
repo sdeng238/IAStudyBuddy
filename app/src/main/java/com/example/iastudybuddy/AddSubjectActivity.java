@@ -27,6 +27,7 @@ public class AddSubjectActivity extends AppCompatActivity implements AdapterView
 
     private EditText subjectNameField;
 
+    //https://www.youtube.com/watch?v=on_OrrX7Nw4
     private String selectedColour;
     private Spinner sColour;
 
@@ -96,7 +97,6 @@ public class AddSubjectActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    //❓❔❓❔how to go back to fragment from activity
     public void asBack(View v)
     {
         startActivity(new Intent(this, HomeActivity.class));

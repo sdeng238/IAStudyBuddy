@@ -26,6 +26,7 @@ import java.util.Date;
 
 public class HomeActivity extends AppCompatActivity {
 
+    //https://youtu.be/Bb8SgfI4Cm4
     ActivityHomeBinding binding;
 
     @Override
@@ -57,6 +58,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     //when the user taps on any icon, the frame layout will be replaced with that fragment
+    //https://developer.android.com/guide/navigation/navigation-migrate#java
     private void replaceFragment(Fragment fragment)
     {
         FragmentManager fragmentManager = getSupportFragmentManager();

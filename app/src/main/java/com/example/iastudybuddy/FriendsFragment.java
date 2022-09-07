@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,21 +36,14 @@ public class FriendsFragment extends Fragment {
 
     private Button goToAddFriendButton;
 
+    //https://youtu.be/eJZmt3BTI2k
     private RecyclerView requestsRecView;
     private ArrayList<CISUser> requestsList;
 
+    //https://youtu.be/eJZmt3BTI2k
     private RecyclerView friendsRecView;
     private ArrayList<CISUser> friendsList;
     private ArrayList<CISUser> sortedFriendsList;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public FriendsFragment() {
         // Required empty public constructor
@@ -66,20 +60,12 @@ public class FriendsFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static FriendsFragment newInstance(String param1, String param2) {
         FriendsFragment fragment = new FriendsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -179,20 +165,20 @@ public class FriendsFragment extends Fragment {
                                         {
                                             //convert today total focus time to minutes
                                             sortedFriendsListMinutes = sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(0) * 60 + sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(1) + sortedFriendsList.get(numTwo).getTodayTotalFocusTime().get(2) / 60;
-                                            //if today's  of Task in taskList is before that of current Task in sortedTaskList
+                                            //if today's focus minutes of current CISUser in friendList is larger than that of current CISUser in sortedFriendsList
                                             if (friendsListMinutes > sortedFriendsListMinutes)
                                             {
-                                                //insert Task in taskList before current Task in sortedTaskList
+                                                //insert CISUser in friendList before current CISUser in sortedFriendList
                                                 sortedFriendsList.add(numTwo, friendsList.get(num));
                                                 //set added to true
                                                 added = true;
                                             }
                                         }
                                     }
-                                    //if Task in taskList has not been added to sortedTaskList
+                                    //if CISUser in friendList has not been added to sortedFriendList
                                     if (!added)
                                     {
-                                        //add Task in taskList to the end of sortedTaskList
+                                        //add CISUser in friendList to the end of sortedFriendList
                                         sortedFriendsList.add(friendsList.get(num));
                                     }
                                 }
@@ -377,9 +363,12 @@ public class FriendsFragment extends Fragment {
     public static class FriendsAdapter extends RecyclerView.Adapter<FriendsFragment.FriendsViewHolder>
     {
         ArrayList<CISUser> friendsData;
+        FirebaseAuth mAuth;
 
         public FriendsAdapter(ArrayList<CISUser> data)
         {
+            mAuth = FirebaseAuth.getInstance();
+
             friendsData = data;
         }
 
@@ -397,8 +386,15 @@ public class FriendsFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull FriendsViewHolder holder, int position)
         {
-            //❗❕‼️❕‼️IF POSITION IS 1, DISPLAY CROWN❗❕‼️❕‼️
-            holder.friendUsernameText.setText(friendsData.get(position).getUsername());
+            if(friendsData.get(position).getEmail().equals(mAuth.getCurrentUser().getEmail()))
+            {
+                holder.friendUsernameText.setText(friendsData.get(position).getUsername() + " (you)");
+            }
+            else
+            {
+                holder.friendUsernameText.setText(friendsData.get(position).getUsername());
+            }
+
             holder.friendTodayTotFocusTimeText.setText(friendsData.get(position).getTodayTotalFocusTime().get(0) + "h" + friendsData.get(position).getTodayTotalFocusTime().get(1) + "min");
             holder.friendTodayTasksComText.setText(friendsData.get(position).getTodayTasksCompleted() + " tasks");
         }

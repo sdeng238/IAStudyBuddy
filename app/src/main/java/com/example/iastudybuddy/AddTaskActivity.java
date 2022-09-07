@@ -29,9 +29,11 @@ public class AddTaskActivity extends AppCompatActivity implements AdapterView.On
 
     private EditText taskNameField;
 
-    private ArrayList<String> listedSubjects;
+
+    //https://www.youtube.com/watch?v=on_OrrX7Nw4
     private String selectedSubject;
     private Spinner sSubject;
+    private ArrayList<String> listedSubjects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class AddTaskActivity extends AppCompatActivity implements AdapterView.On
 
             sSubject = findViewById(R.id.atSubjectSpinner);
             //get listed subjects from current user's subject ArrayList
+            //https://www.tutorialspoint.com/how-to-create-spinner-programmatically-from-array-in-android
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listedSubjects);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             sSubject.setAdapter(adapter);
@@ -73,35 +76,48 @@ public class AddTaskActivity extends AppCompatActivity implements AdapterView.On
         //if user inputted a task name and selected a subject
         if(!taskNameString.equals("") && !selectedSubject.equals("Select subject"))
         {
-            //look for subject owned by user and with selected name (unique)
-            firestore.collection("subjects").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).whereEqualTo("name", selectedSubject).get().addOnCompleteListener(task ->
+            firestore.collection("tasks").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).whereEqualTo("name", taskNameString).get().addOnCompleteListener(task ->
             {
                 if(task.isSuccessful())
                 {
-                    for(DocumentSnapshot ds : task.getResult().getDocuments())
+                    if(task.getResult().getDocuments().size() == 0)
                     {
-                        Subject currSubject = ds.toObject(Subject.class);
-
-                        //fetch current user
-                        firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task1 ->
+                        //look for subject owned by user and with selected name (unique)
+                        firestore.collection("subjects").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).whereEqualTo("name", selectedSubject).get().addOnCompleteListener(task1 ->
                         {
-                           if(task1.isSuccessful())
-                           {
-                               for(DocumentSnapshot ds1 : task1.getResult().getDocuments())
-                               {
-                                   //create new task with current subject UID
-                                   CISTask newTask = new CISTask(taskNameString, currSubject.getUid(), mAuth.getCurrentUser().getEmail());
+                            if(task1.isSuccessful())
+                            {
+                                for(DocumentSnapshot ds : task1.getResult().getDocuments())
+                                {
+                                    Subject currSubject = ds.toObject(Subject.class);
 
-                                   //add new Task object to tasks collection, setting doc name as task UID
-                                   firestore.collection("tasks").document(newTask.getUid()).set(newTask);
-                                   //add new task uid to tasks ArrayList in current user
-                                   firestore.collection("users").document(ds1.getId()).update("tasks", FieldValue.arrayUnion(newTask.getUid()));
+                                    //fetch current user
+                                    firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task2 ->
+                                    {
+                                        if(task2.isSuccessful())
+                                        {
+                                            for(DocumentSnapshot ds1 : task2.getResult().getDocuments())
+                                            {
+                                                //create new task with current subject UID
+                                                CISTask newTask = new CISTask(taskNameString, currSubject.getUid(), mAuth.getCurrentUser().getEmail());
 
-                                   Toast.makeText(getBaseContext(), "Task added!", Toast.LENGTH_SHORT).show();
-                                   atBack(v);
-                               }
-                           }
+                                                //add new Task object to tasks collection, setting doc name as task UID
+                                                firestore.collection("tasks").document(newTask.getUid()).set(newTask);
+                                                //add new task uid to tasks ArrayList in current user
+                                                firestore.collection("users").document(ds1.getId()).update("tasks", FieldValue.arrayUnion(newTask.getUid()));
+
+                                                Toast.makeText(getBaseContext(), "Task added!", Toast.LENGTH_SHORT).show();
+                                                atBack(v);
+                                            }
+                                        }
+                                    });
+                                }
+                            }
                         });
+                    }
+                    else
+                    {
+                        Toast.makeText(getBaseContext(), "A task with this name already exists", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

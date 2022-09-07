@@ -42,7 +42,6 @@ public class UserProfileActivity extends AppCompatActivity {
         personalBestText = findViewById(R.id.upPersonalBestTextView);
         totFocusTimeText = findViewById(R.id.upTotalFocusTimeTextView);
         rankText = findViewById(R.id.rankTextView);
-        crownsReceivedText = findViewById(R.id.crownsReceivedTextView);
 
         //display username
         nameText.setText(userInfo.getUsername());
@@ -70,8 +69,6 @@ public class UserProfileActivity extends AppCompatActivity {
         {
             rankText.setText("Bronze\n ≥150h");
         }
-        //display crowns received
-        crownsReceivedText.setText(Integer.toString(userInfo.getCrownsNumber()));
     }
 
     public void upBack(View v)

@@ -66,8 +66,6 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-
         return fragment;
     }
 
@@ -95,6 +93,7 @@ public class HomeFragment extends Fragment {
         userProfileButton = v.findViewById(R.id.userProfileButton);
 
         //get current date and time
+        //https://www.w3schools.com/java/java_date.asp
         Date currentDate = new Date();
 
         //display today's date
@@ -168,13 +167,4 @@ public class HomeFragment extends Fragment {
 
         return v;
     }
-
-//    public void goToFocusActivity()
-//    {
-//        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.home, new FocusFragment());
-//        fragmentTransaction.addToBackStack(null);
-//        fragmentTransaction.commit();
-//    }
 }

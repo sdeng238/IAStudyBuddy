@@ -52,6 +52,7 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
     private TextView numComTasksText;
     private Button goToAddTaskActivityButton;
 
+    //https://youtu.be/eJZmt3BTI2k
     private RecyclerView tasksRecView;
     private ArrayList<CISTask> tasksList;
     private ArrayList<CISTask> sortedTasksList;
@@ -60,15 +61,9 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
     private ArrayList<Integer> sortingIndex;
     private CISTask deletedTask;
 
+    //https://www.youtube.com/watch?v=on_OrrX7Nw4
     private String selectedSort;
     private Spinner sSort;
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -85,20 +80,12 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
     // TODO: Rename and change types and number of parameters
     public static TasksFragment newInstance(String param1, String param2) {
         TasksFragment fragment = new TasksFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -117,7 +104,13 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
         tasksRecView = v.findViewById(R.id.tasksRecView);
 
         //array of subject colour ints
-        subjectColours = new int[]{getResources().getColor(R.color.red), getResources().getColor(R.color.orange), getResources().getColor(R.color.yellow), getResources().getColor(R.color.green), getResources().getColor(R.color.blue), getResources().getColor(R.color.purple), getResources().getColor(R.color.pink)};
+        subjectColours = new int[]{getResources().getColor(R.color.red),
+                getResources().getColor(R.color.orange),
+                getResources().getColor(R.color.yellow),
+                getResources().getColor(R.color.green),
+                getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.purple),
+                getResources().getColor(R.color.pink)};
 
         //ArrayList of user's Subject objects' UIDs
         subjectUID = new ArrayList<>();
@@ -136,7 +129,6 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
 
         //ArrayList of user's Task objects NOT sorted by date
         tasksList = new ArrayList<>();
-
         //ArrayList of sorting index for selected sort (by date)
         sortingIndex = new ArrayList<>();
         //ArrayList of user's Task objects SORTED BY DATE
@@ -144,7 +136,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
         numComTasksText = v.findViewById(R.id.numComTasksTextView);
         deletedTask = null;
         //fetch user's Task objects
-        firestore.collection("tasks").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task ->
+        firestore.collection("tasks").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail())
+                .get().addOnCompleteListener(task ->
         {
             if(task.isSuccessful())
             {
@@ -155,7 +148,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                 }
 
                 //fetch current user
-                firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail()).get().addOnCompleteListener(task1 ->
+                firestore.collection("users").whereEqualTo("email", mAuth.getCurrentUser().getEmail())
+                        .get().addOnCompleteListener(task1 ->
                 {
                     if(task1.isSuccessful())
                     {
@@ -186,7 +180,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                                         if(!added)
                                         {
                                             //if creation date of Task in taskList is before that of current Task in sortedTaskList
-                                            if(new Date(tasksList.get(num).getCreationDay().getTime()).before(new Date(sortedTasksList.get(numTwo).getCreationDay().getTime())))
+                                            if(new Date(tasksList.get(num).getCreationDay().getTime())
+                                                    .before(new Date(sortedTasksList.get(numTwo).getCreationDay().getTime())))
                                             {
                                                 //insert Task in taskList before current Task in sortedTaskList
                                                 sortedTasksList.add(numTwo, tasksList.get(num));
@@ -215,6 +210,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                             tasksRecView.setAdapter(myAdapter);
                             tasksRecView.setLayoutManager(new LinearLayoutManager(v.getContext()));
 
+                            //https://www.youtube.com/watch?v=rcSNkSJ624U
+                            //https://github.com/xabaras/RecyclerViewSwipeDecorator
                             ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT)
                             {
                                 //not used -> only applied for drag and rearrange items
@@ -229,7 +226,6 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction)
                                 {
                                     int position = viewHolder.getAdapterPosition();
-                                    DocumentReference currUserRef = firestore.collection("users").document(ds1.getId());
 
                                     switch (direction)
                                     {
@@ -240,25 +236,29 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                                             myAdapter.notifyItemRemoved(position);
 
                                             //remove completed Task object UID from tasks ArrayList in Firebase user
-                                            currUserRef.update("tasks", FieldValue.arrayRemove(deletedTask.getUid()));
+                                            firestore.collection("users").document(ds1.getId())
+                                                    .update("tasks", FieldValue.arrayRemove(deletedTask.getUid()));
                                             //delete Task object document from tasks collection in Firebase
                                             firestore.collection("tasks").document(deletedTask.getUid()).delete();
 
                                             //increase todayTasksCompleted by 1 in Firebase user
-                                            currUserRef.update("todayTasksCompleted", currUser.getTodayTasksCompleted() + 1);
+                                            firestore.collection("users").document(ds1.getId())
+                                                    .update("todayTasksCompleted", currUser.getTodayTasksCompleted() + 1);
                                             //increase numComTasksTextView by 1 on display
                                             numComTasksText.setText(String.valueOf(currUser.getTodayTasksCompleted() + 1));
 
-                                            Snackbar.make(tasksRecView, deletedTask.getName() + " has been completed!", Snackbar.LENGTH_INDEFINITE)
+                                            Snackbar.make(tasksRecView, deletedTask.getName() + " has been completed!", Snackbar.LENGTH_LONG)
                                                     .setAction("Undo", view ->
                                                     {
                                                         sortedTasksList.add(position, deletedTask);
                                                         myAdapter.notifyItemInserted(position);
 
-                                                        currUserRef.update("tasks", FieldValue.arrayUnion(deletedTask.getUid()));
+                                                        firestore.collection("users").document(ds1.getId())
+                                                                .update("tasks", FieldValue.arrayUnion(deletedTask.getUid()));
                                                         firestore.collection("tasks").document(deletedTask.getUid()).set(deletedTask);
 
-                                                        currUserRef.update("todayTasksCompleted", currUser.getTodayTasksCompleted());
+                                                        firestore.collection("users").document(ds1.getId())
+                                                                .update("todayTasksCompleted", currUser.getTodayTasksCompleted());
                                                         numComTasksText.setText(String.valueOf(currUser.getTodayTasksCompleted()));
                                                     }).show();
                                             break;
@@ -266,7 +266,8 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                                 }
 
                                 @Override
-                                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                                public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                                        float dX, float dY, int actionState, boolean isCurrentlyActive) {
                                     new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                                             .addSwipeLeftBackgroundColor(ContextCompat.getColor(v.getContext(), R.color.green_2))
                                             .addSwipeLeftActionIcon(R.drawable.ic_baseline_done_outline_24)
@@ -325,6 +326,7 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
                     //if current Task object's subject UID matches current Subject object UID, add index of Task object to sortIndex ArrayList
                     if(sortedTasksList.get(num).getSubject().equals(currSubjectUID))
                     {
+                        //add current CISTask's index in sortedTasksList to sortingIndex
                         sortingIndex.add(num);
                     }
                 }
@@ -380,10 +382,12 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
 
             holder.taskNameText.setText(tasksData.get(sortIndex.get(position)).getName());
 
+            //https://stackoverflow.com/questions/27005861/calculate-days-between-two-dates-in-java-8
             //get LocalDate objects of today's date and task's creation date
             LocalDate dateAfter = LocalDate.now();
 
             Date creationDate = new Date(tasksData.get(sortIndex.get(position)).getCreationDay().getTime());
+            //https://stackoverflow.com/questions/21242110/convert-java-util-date-to-java-time-localdate
             LocalDate dateBefore = creationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
             //calculate difference in days between today's date and task's creation date
@@ -402,7 +406,10 @@ public class TasksFragment extends Fragment implements AdapterView.OnItemSelecte
             }
 
             //fetch Subject object with same UID of task's subject and is owned by current user
-            firestore.collection("subjects").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail()).whereEqualTo("uid", tasksData.get(sortIndex.get(position)).getSubject()).get().addOnCompleteListener(task ->
+            //https://firebase.google.com/docs/firestore/query-data/queries#array_membership
+            firestore.collection("subjects").whereEqualTo("ownerEmail", mAuth.getCurrentUser().getEmail())
+                    .whereEqualTo("uid", tasksData.get(sortIndex.get(position)).getSubject())
+                    .get().addOnCompleteListener(task ->
             {
                 if(task.isSuccessful())
                 {

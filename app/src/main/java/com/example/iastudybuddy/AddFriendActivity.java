@@ -22,6 +22,7 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
     private FirebaseAuth mAuth;
     private FirebaseFirestore firestore;
 
+    //https://www.youtube.com/watch?v=on_OrrX7Nw4
     private String selectedMethod;
     private Spinner sMethod;
 
@@ -114,7 +115,7 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
             else
             {
                 //if username field is empty, ask user to enter valid email/username
-                Toast.makeText(this, "Please enter a valid email/username", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please enter a email/username", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -136,6 +137,10 @@ public class AddFriendActivity extends AppCompatActivity implements AdapterView.
                     Toast.makeText(this, "Friend request sent!", Toast.LENGTH_SHORT).show();
                     afBack(v);
                 }
+            }
+            else
+            {
+                Toast.makeText(this, "Unable to send friend request", Toast.LENGTH_SHORT).show();
             }
         });
     }

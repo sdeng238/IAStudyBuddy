@@ -6,7 +6,6 @@ import java.util.UUID;
 
 //changed name of class from User to com.example.iastudybuddy.CISUser
 public class CISUser implements Serializable {
-    private int crownsNumber;
     private String email;
     private ArrayList<String> friendsUID;
     private int personalBestMinutes;
@@ -25,7 +24,6 @@ public class CISUser implements Serializable {
     }
 
     public CISUser(String email, String username) {
-        crownsNumber = 0;
         this.email = email;
         friendsUID = new ArrayList<>();
         personalBestMinutes = 0;
@@ -41,14 +39,6 @@ public class CISUser implements Serializable {
         totalFocusMinutes = 0;
         uid = UUID.randomUUID().toString();
         this.username = username;
-    }
-
-    public int getCrownsNumber() {
-        return crownsNumber;
-    }
-
-    public void setCrownsNumber(int crownsNumber) {
-        this.crownsNumber = crownsNumber;
     }
 
     public String getEmail() {
